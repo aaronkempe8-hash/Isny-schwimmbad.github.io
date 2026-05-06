@@ -3,287 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waldbad Isny | Naturfreibad & Camping</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Waldbad Isny | Premium Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* Farbpalette und globale Variablen */
         :root {
-            --primary: #2d6a4f;    /* Dunkles Waldgrün */
-            --secondary: #40916c;  /* Helleres Grün */
-            --accent: #52b788;     /* Akzentfarbe für Buttons */
-            --bg-light: #f8f9fa;   /* Sehr helles Grau für den Hintergrund */
-            --text-dark: #212529;
-            --text-light: #ffffff;
+            --glass: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --accent: #74c69d;
+            --text: #ffffff;
+            --bg-dark: #081c15;
         }
 
-        /* Basis-Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            scroll-behavior: smooth; /* Weiches Scrollen beim Klicken auf Links */
+            font-family: 'Montserrat', sans-serif;
         }
 
         body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text);
+            overflow-x: hidden;
             line-height: 1.6;
         }
 
-        /* --- Navigation --- */
+        /* --- Glassmorphism Navigation --- */
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1100px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary);
-            text-decoration: none;
-        }
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--accent); text-decoration: none; }
 
-        .nav-links {
-            list-style: none;
+        .search-box {
+            position: relative;
             display: flex;
-            gap: 2rem;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 5px 15px;
         }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 400;
-            transition: color 0.3s;
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px;
+            outline: none;
         }
 
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        /* --- Hero Bereich (Startbildschirm) --- */
+        /* --- 3D Hero Section --- */
         .hero {
             height: 100vh;
-            /* Hintergrundbild von Unsplash als Platzhalter für einen schönen See */
-            background: linear-gradient(rgba(45, 106, 79, 0.7), rgba(45, 106, 79, 0.5)), url('https://images.unsplash.com/photo-1542359649-31e03cd4d909?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            color: var(--text-light);
-            padding: 0 2rem;
+            perspective: 1000px; /* Ermöglicht 3D Effekte */
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-bottom: 2rem;
-        }
-
-        .btn {
-            padding: 0.8rem 2rem;
-            background-color: var(--accent);
-            color: white;
-            text-decoration: none;
+        .hero-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 4rem;
             border-radius: 30px;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transform: rotateX(5deg);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            transition: transform 0.5s ease;
         }
 
-        .btn:hover {
-            background-color: var(--primary);
-            transform: translateY(-2px);
+        .hero-card:hover {
+            transform: rotateX(0deg) scale(1.02);
         }
 
-        /* --- Allgemeine Sektionen --- */
-        section {
-            padding: 6rem 2rem;
+        .hero h1 { font-size: clamp(2rem, 8vw, 4rem); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 5px; }
+
+        /* --- 3D Grid & Cards --- */
+        .content-section {
+            padding: 5rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 3rem;
-        }
-
-        /* --- Über Uns Bereich --- */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .info-img {
-            width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        /* --- Angebote (Karten-Design) --- */
-        .features {
+        .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
 
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        /* Der Liquid Effect Hover */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transition: 0.5s;
+            pointer-events: none;
         }
 
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .glass-card:hover {
+            transform: translateY(-15px) rotateY(10deg);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+            border-color: var(--accent);
         }
 
-        .card h3 {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
+        .btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 10px 25px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        /* --- Footer --- */
+        .btn:hover { background: white; transform: scale(1.1); }
+
+        /* Highlight für Suche */
+        .highlight { background: var(--accent); color: var(--bg-dark); }
+
         footer {
-            background-color: var(--primary);
-            color: white;
+            padding: 3rem;
             text-align: center;
-            padding: 4rem 2rem;
-            margin-top: 4rem;
+            background: rgba(0,0,0,0.4);
+            margin-top: 5rem;
         }
 
-        footer h3 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        footer p {
-            margin: 0.5rem 0;
-            color: #d8f3dc;
-        }
-
-        /* --- Responsives Design für Handys --- */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none; /* Versteckt auf kleinen Bildschirmen */
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <header id="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">Waldbad Isny</a>
-            <ul class="nav-links">
-                <li><a href="#home">Startseite</a></li>
-                <li><a href="#about">Über uns</a></li>
-                <li><a href="#angebote">Angebote</a></li>
-                <li><a href="#kontakt">Kontakt</a></li>
-            </ul>
+    <header>
+        <a href="#" class="logo">WALDBAD</a>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Suchen..." onkeyup="searchContent()">
+            <span style="cursor:default">🔍</span>
         </div>
     </header>
 
-    <main>
-        <section id="home" class="hero">
-            <h1>Willkommen im Waldbad Isny</h1>
-            <p>Ihre Oase für Natur, Erholung und Camping mitten im wunderschönen Allgäu am Felderholzweiher.</p>
-            <a href="#angebote" class="btn">Jetzt entdecken</a>
-        </section>
+    <section class="hero">
+        <div class="hero-card">
+            <h1>Isny Allgäu</h1>
+            <p>Erlebe das Wasser in einer neuen Dimension.</p>
+            <a href="#entdecken" class="btn">Eintauchen</a>
+        </div>
+    </section>
 
-        <section id="about">
-            <h2 class="section-title">Natur pur genießen</h2>
-            <div class="info-grid">
-                <div>
-                    <img src="https://images.unsplash.com/photo-1510312305653-8ed496efae75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Natursee im Wald" class="info-img">
-                </div>
-                <div>
-                    <h3 style="color: var(--secondary); margin-bottom: 1rem; font-size: 1.8rem;">Fast wie wild campen</h3>
-                    <p style="margin-bottom: 1rem;">Gleich hinter der Stadtgrenze von Isny lädt der idyllische Felderholzweiher zum Schwimmen und Planschen ein. Unser Waldbad blickt auf eine lange Tradition seit den 1920er Jahren zurück.</p>
-                    <p>Wild-romantische Natur ist das Schönste, was wir Ihnen bieten können: Alte Bäume, ein Natursee, das Plätschern der Quelle und ein Fischreiher, der majestätisch über das Wasser kreist. Egal ob Badegast oder Camper – hier finden Sie Entschleunigung.</p>
-                </div>
+    <div class="content-section" id="entdecken">
+        <div class="grid">
+            <div class="glass-card searchable">
+                <h2>🌊 Das Naturbad</h2>
+                <p>Kristallklares Wasser aus den Alpen. Der Felderholzweiher bietet natürliche Erfrischung ohne Chlor, umgeben von dichtem Nadelwald.</p>
             </div>
-        </section>
-
-        <section id="angebote">
-            <h2 class="section-title">Was wir bieten</h2>
-            <div class="features">
-                <div class="card">
-                    <div class="card-icon">🌊</div>
-                    <h3>Natur-Badesee</h3>
-                    <p>Erfrischen Sie sich im sauberen Wasser. Eine große Liegewiese, ein Kiesstrand für Kinder und ein Stand-Up Paddle Verleih warten auf Sie.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">⛺</div>
-                    <h3>Naturcamping</h3>
-                    <p>Rund 50 idyllische Stellplätze und eine autofreie Zeltwiese inmitten von Bäumen bieten den perfekten Rückzugsort fernab des Alltags.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🍔</div>
-                    <h3>Gastronomie</h3>
-                    <p>Unsere kleine Gastronomie "JÂGER+KLAUBER" sowie ein 24-h Kiosk sorgen für Ihr leibliches Wohl nach einem langen Badetag.</p>
-                </div>
+            <div class="glass-card searchable">
+                <h2>⛺ High-End Camping</h2>
+                <p>Schlafen unter den Sternen mit dem Komfort von morgen. Unsere Stellplätze sind harmonisch in die Allgäuer Landschaft integriert.</p>
             </div>
-        </section>
-    </main>
+            <div class="glass-card searchable">
+                <h2>🍕 Gastronomie</h2>
+                <p>Regionale Spezialitäten treffen auf moderne Küche. Genießen Sie Pizza, Salate und kühle Drinks auf unserer schwimmenden Terrasse.</p>
+            </div>
+        </div>
+    </div>
 
-    <footer id="kontakt">
-        <h3>Waldbad Isny GmbH & Co. KG</h3>
-        <p>Lohbauerstraße 61, 88316 Isny im Allgäu</p>
-        <p>Email: booking@waldbad-isny.de | Telefon: +49 7562 2389</p>
-        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">&copy; 2026 Waldbad Isny | Erstellt für GitHub Pages</p>
+    <footer>
+        <p>&copy; 2026 Waldbad Isny - Lohbauerstraße 61</p>
     </footer>
 
     <script>
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            // Wenn man etwas nach unten scrollt, wird der Schatten der Navbar etwas stärker
-            if (window.scrollY > 50) {
-                nav.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-            } else {
-                nav.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        // Einfache Suchfunktion
+        function searchContent() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('searchable');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let text = cards[i].innerText.toLowerCase();
+                if (text.includes(input)) {
+                    cards[i].style.display = "block";
+                    cards[i].style.opacity = "1";
+                } else {
+                    cards[i].style.opacity = "0.2";
+                    // Optional: cards[i].style.display = "none"; 
+                }
             }
+        }
+
+        // 3D Effekt Verstärkung durch Mausbewegung
+        document.addEventListener('mousemove', (e) => {
+            let amount = 10;
+            let x = (e.clientX / window.innerWidth - 0.5) * amount;
+            let y = (e.clientY / window.innerHeight - 0.5) * amount;
+            
+            const heroCard = document.querySelector('.hero-card');
+            heroCard.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
         });
     </script>
 </body>
