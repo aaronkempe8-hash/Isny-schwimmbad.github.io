@@ -1,254 +1,1489 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freibad Baggersee Burgwang | Vision 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-heavy: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --accent: #5ecfee;
-            --navy: #0b2d4e;
-            --white: #ffffff;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freibad Baggersee Burgwang — Isny im Allgäu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Syne:wght@400;500;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════
+   TOKENS
+════════════════════════════════════ */
+:root {
+  --void:    #00050f;
+  --abyss:   #010a1a;
+  --deep:    #03122b;
+  --ocean:   #062040;
+  --mid:     #0d4070;
+  --azure:   #1a7fc4;
+  --sky:     #38b6ff;
+  --glow:    #5dd4ff;
+  --ice:     #b8ecff;
+  --white:   #eef8ff;
+  --muted:   #3d6a8a;
+  --hot:     #ff7730;
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: var(--font-main);
-            background: #061929;
-            color: var(--white);
-            overflow-x: hidden;
-            line-height: 1.6;
-            /* Fixierter Hintergrund für Parallax-Gefühl */
-            background-image: radial-gradient(circle at 50% 50%, #0e3d60 0%, #061929 100%);
-        }
+  --glass-bg:      rgba(255,255,255,0.04);
+  --glass-border:  rgba(255,255,255,0.1);
+  --glass-shadow:  0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  --glass-glow:    0 0 40px rgba(93,212,255,0.08);
 
-        /* ════════════════════════════════
-           GLAS-NAVIGATION MIT SUCHE
-        ════════════════════════════════ */
-        nav {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 95%;
-            max-width: 1200px;
-            height: 70px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-ui:      'Syne', sans-serif;
+  --f-mono:    'JetBrains Mono', monospace;
 
-        .nav-logo { font-weight: 800; font-size: 1.2rem; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  --ease-out-expo: cubic-bezier(0.19,1,0.22,1);
+  --ease-spring:   cubic-bezier(0.34,1.56,0.64,1);
+}
 
-        .search-container {
-            position: relative;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 15px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            width: 300px;
-            transition: all 0.3s;
-        }
+/* ════════════════════════════════════
+   BASE
+════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:var(--f-ui);
+  background:var(--void);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:none;
+}
 
-        .search-container:focus-within { width: 400px; background: rgba(255,255,255,0.1); border-color: var(--accent); }
+/* Noise texture overlay */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.022;
+  pointer-events:none;
+  z-index:9000;
+}
 
-        .search-container input {
-            background: transparent;
-            border: none;
-            color: white;
-            margin-left: 10px;
-            outline: none;
-            width: 100%;
-        }
+/* ════════════════════════════════════
+   CURSOR
+════════════════════════════════════ */
+#cur{
+  position:fixed;width:8px;height:8px;
+  background:var(--glow);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .2s;
+  mix-blend-mode:screen;
+  box-shadow:0 0 12px var(--glow),0 0 24px rgba(93,212,255,0.4);
+}
+#cur-ring{
+  position:fixed;width:32px;height:32px;
+  border:1px solid rgba(93,212,255,0.35);
+  border-radius:50%;pointer-events:none;
+  z-index:9998;transform:translate(-50%,-50%);
+  transition:width .25s var(--ease-out-expo),height .25s var(--ease-out-expo),border-color .25s;
+}
+body.hovering #cur{width:16px;height:16px;background:var(--hot)}
+body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(255,119,48,0.5)}
 
-        /* ════════════════════════════════
-           3D HERO SECTION
-        ════════════════════════════════ */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1000px;
-            padding: 0 20px;
-        }
+/* ════════════════════════════════════
+   LIQUID GLASS MIXIN
+════════════════════════════════════ */
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow),var(--glass-glow);
+}
+.glass-heavy{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(40px) saturate(200%);
+  -webkit-backdrop-filter:blur(40px) saturate(200%);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 16px 64px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.12),0 0 60px rgba(93,212,255,0.06);
+}
+.glass-inner{
+  background:rgba(255,255,255,0.03);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.07);
+}
 
-        .hero-3d-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 60px;
-            text-align: center;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
-            max-width: 900px;
-        }
+/* ════════════════════════════════════
+   SCENE BG (3D depth orbs)
+════════════════════════════════════ */
+#scene{
+  position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 120% 80% at 50% 110%,#062040 0%,transparent 60%),
+             radial-gradient(ellipse 80% 60% at 80% 20%,rgba(26,127,196,0.08) 0%,transparent 50%),
+             linear-gradient(175deg,#00050f 0%,#010a1a 45%,#03122b 100%);
+  overflow:hidden;
+}
+.orb{
+  position:absolute;border-radius:50%;
+  filter:blur(80px);pointer-events:none;
+  animation:orb-float ease-in-out infinite alternate;
+}
+.orb-a{width:800px;height:800px;top:-300px;right:-200px;background:radial-gradient(circle,rgba(26,127,196,0.18),transparent 70%);animation-duration:14s}
+.orb-b{width:500px;height:500px;bottom:-100px;left:-100px;background:radial-gradient(circle,rgba(13,64,112,0.25),transparent 70%);animation-duration:10s;animation-delay:-5s}
+.orb-c{width:300px;height:300px;top:40%;left:45%;background:radial-gradient(circle,rgba(93,212,255,0.08),transparent 70%);animation-duration:8s;animation-delay:-3s}
+@keyframes orb-float{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(40px,-60px) scale(1.1)}
+}
 
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            line-height: 0.9;
-            margin-bottom: 20px;
-            background: linear-gradient(to bottom, #fff, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transform: translateZ(50px); /* 3D Tiefe */
-        }
+/* Stars */
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.05}to{opacity:.6}}
 
-        /* ════════════════════════════════
-           LIQUID GLASS CARDS
-        ════════════════════════════════ */
-        .section-container {
-            padding: 100px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
+/* ════════════════════════════════════
+   NAV
+════════════════════════════════════ */
+nav{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:800;width:calc(100% - 64px);max-width:1200px;
+  padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:16px;
+  transition:all .4s;
+}
+nav.glass-heavy{top:16px}
 
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 25px;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            cursor: pointer;
-        }
+.nav-brand{
+  font-family:var(--f-display);font-size:17px;font-weight:600;
+  color:var(--white);text-decoration:none;letter-spacing:.03em;
+  display:flex;align-items:center;gap:10px;cursor:none;
+}
+.nav-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--azure),var(--sky));
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  box-shadow:0 0 16px rgba(56,182,255,0.4);
+}
 
-        /* Liquid Glow Effekt */
-        .glass-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transition: 0.5s;
-        }
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+  font-family:var(--f-ui);font-size:12px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(238,248,255,.5);text-decoration:none;
+  padding:6px 12px;border-radius:8px;cursor:none;
+  transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--glow);background:rgba(93,212,255,.07)}
 
-        .glass-card:hover {
-            transform: translateY(-20px) scale(1.02);
-            background: var(--glass-heavy);
-            border-color: var(--accent);
-            box-shadow: 0 30px 60px rgba(94, 207, 238, 0.15);
-        }
+/* ════════════════════════════════════
+   SEARCH BAR
+════════════════════════════════════ */
+#search-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  color:var(--glow);font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:none;transition:all .2s;
+}
+#search-btn:hover{background:rgba(93,212,255,.1);border-color:rgba(93,212,255,.3)}
 
-        .glass-card:hover::after { left: 100%; }
+#search-overlay{
+  position:fixed;inset:0;z-index:900;
+  background:rgba(0,5,15,.8);
+  backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding-top:120px;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s;
+}
+#search-overlay.open{opacity:1;pointer-events:all}
 
-        .search-highlight {
-            background: var(--accent);
-            color: var(--navy);
-            border-radius: 4px;
-            padding: 0 2px;
-        }
+.search-box{
+  width:100%;max-width:680px;padding:0 32px;
+  position:relative;
+}
+.search-input-wrap{
+  position:relative;display:flex;align-items:center;
+  border-radius:16px;overflow:hidden;
+}
+.search-input-wrap::before{
+  content:'';position:absolute;inset:-1px;
+  background:linear-gradient(135deg,rgba(93,212,255,.4),rgba(26,127,196,.2),rgba(93,212,255,.1));
+  border-radius:17px;z-index:-1;
+}
+#search-input{
+  width:100%;padding:18px 56px 18px 20px;
+  background:rgba(3,18,43,.8);
+  border:none;outline:none;
+  font-family:var(--f-ui);font-size:18px;font-weight:400;
+  color:var(--white);letter-spacing:.02em;
+  backdrop-filter:blur(20px);
+}
+#search-input::placeholder{color:rgba(238,248,255,.25)}
+.search-icon{
+  position:absolute;right:18px;
+  font-size:18px;color:var(--glow);pointer-events:none;
+}
+#search-close{
+  position:absolute;top:16px;right:48px;
+  font-family:var(--f-mono);font-size:11px;color:var(--muted);
+  letter-spacing:.1em;cursor:none;
+  transition:color .2s;
+  background:none;border:none;
+}
+#search-close:hover{color:var(--glow)}
 
-        .hidden-card { display: none; }
+#search-results{
+  width:100%;max-width:680px;padding:16px 32px 0;
+  max-height:60vh;overflow-y:auto;
+}
+#search-results::-webkit-scrollbar{width:4px}
+#search-results::-webkit-scrollbar-track{background:transparent}
+#search-results::-webkit-scrollbar-thumb{background:rgba(93,212,255,.2);border-radius:2px}
 
-        h2, h3 { color: var(--accent); font-family: 'Playfair Display', serif; margin-bottom: 15px; }
+.sr-item{
+  display:block;padding:16px 20px;margin-bottom:8px;
+  border-radius:12px;text-decoration:none;
+  transition:background .2s,border-color .2s;cursor:none;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.03);
+}
+.sr-item:hover{background:rgba(93,212,255,.06);border-color:rgba(93,212,255,.2)}
+.sr-section{font-size:10px;font-family:var(--f-mono);color:var(--sky);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.sr-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:3px}
+.sr-snippet{font-size:13px;font-weight:300;color:var(--muted);line-height:1.5}
+.sr-snippet mark{background:none;color:var(--glow);font-weight:500}
+.sr-empty{text-align:center;padding:40px;color:var(--muted);font-size:14px;font-family:var(--f-mono)}
+.sr-hint{
+  font-family:var(--f-mono);font-size:11px;color:rgba(238,248,255,.2);
+  text-align:center;margin-top:24px;letter-spacing:.06em;
+}
 
-    </style>
+/* ════════════════════════════════════
+   LAYOUT
+════════════════════════════════════ */
+main{position:relative;z-index:1}
+section{padding:100px 80px;max-width:1400px;margin:0 auto}
+
+.s-eyebrow{
+  font-family:var(--f-mono);font-size:10px;
+  color:var(--sky);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.s-eyebrow::before{content:'';width:20px;height:1px;background:var(--sky)}
+
+.s-title{
+  font-family:var(--f-display);
+  font-size:clamp(48px,7vw,96px);
+  font-weight:300;line-height:.95;
+  letter-spacing:-.01em;color:var(--white);
+  margin-bottom:24px;
+}
+.s-title strong{font-weight:700;color:var(--glow)}
+
+.s-body{
+  font-size:16px;font-weight:400;
+  color:rgba(238,248,255,.45);
+  line-height:1.85;max-width:560px;
+}
+
+/* ════════════════════════════════════
+   HERO
+════════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:flex-end;
+  padding:0 80px 0;
+  position:relative;overflow:hidden;
+}
+
+/* Perspective grid floor */
+.hero-grid{
+  position:absolute;bottom:0;left:0;right:0;height:55vh;
+  background-image:
+    linear-gradient(rgba(93,212,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(93,212,255,.06) 1px,transparent 1px);
+  background-size:80px 80px;
+  transform:perspective(500px) rotateX(50deg);
+  transform-origin:bottom center;
+  mask-image:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-inner{
+  position:relative;z-index:2;
+  padding-top:160px;
+  padding-bottom:56px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:end;
+}
+
+.hero-headline{
+  font-family:var(--f-display);
+  font-size:clamp(72px,10vw,140px);
+  font-weight:300;line-height:.88;
+  letter-spacing:-.02em;
+  color:var(--white);
+}
+.hero-headline .em{
+  display:block;
+  background:linear-gradient(135deg,var(--sky),var(--glow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-weight:700;
+}
+.hero-headline .small{
+  display:block;font-size:.42em;
+  font-weight:300;color:rgba(238,248,255,.4);
+  letter-spacing:.04em;margin-bottom:8px;
+  font-family:var(--f-ui);
+}
+
+.hero-right{
+  display:flex;flex-direction:column;gap:32px;
+  padding-bottom:12px;
+}
+.hero-desc{
+  font-size:17px;font-weight:300;
+  color:rgba(238,248,255,.5);
+  line-height:1.85;
+}
+.hero-desc strong{color:var(--ice);font-weight:500}
+
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+/* 3D glass button */
+.btn-3d{
+  position:relative;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;border-radius:12px;
+  font-family:var(--f-ui);font-size:13px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;cursor:none;overflow:hidden;
+  transition:transform .25s var(--ease-spring),box-shadow .25s;
+  transform-style:preserve-3d;
+}
+.btn-3d-primary{
+  background:linear-gradient(135deg,var(--azure),var(--sky));
+  color:var(--void);border:none;
+  box-shadow:0 4px 24px rgba(56,182,255,0.35),0 1px 0 rgba(255,255,255,.3) inset;
+}
+.btn-3d-primary:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 12px 40px rgba(56,182,255,0.5),0 1px 0 rgba(255,255,255,.3) inset;
+}
+.btn-3d-glass{
+  background:rgba(255,255,255,.07);
+  color:var(--ice);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:var(--glass-shadow);
+  backdrop-filter:blur(20px);
+}
+.btn-3d-glass:hover{
+  transform:translateY(-3px) scale(1.02);
+  background:rgba(255,255,255,.1);
+  border-color:rgba(93,212,255,.3);
+}
+.btn-3d::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(to bottom,rgba(255,255,255,.12),transparent);
+  pointer-events:none;
+}
+
+/* Floating stat cards */
+.hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;margin-top:48px;
+  position:relative;z-index:2;
+  padding-bottom:80px;
+  grid-column:1/-1;
+}
+.hstat{
+  border-radius:16px;padding:20px;
+  transition:transform .3s var(--ease-spring);
+  position:relative;overflow:hidden;
+}
+.hstat::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.06),transparent);
+  pointer-events:none;border-radius:16px;
+}
+.hstat:hover{transform:translateY(-4px) scale(1.02)}
+.hstat-num{
+  font-family:var(--f-display);font-size:36px;font-weight:700;
+  color:var(--glow);line-height:1;margin-bottom:4px;
+  text-shadow:0 0 30px rgba(93,212,255,.4);
+}
+.hstat-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+/* ════════════════════════════════════
+   PROJEKT
+════════════════════════════════════ */
+#projekt{padding-top:120px}
+.projekt-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;margin-top:64px;
+}
+.projekt-text p{
+  font-size:16px;font-weight:300;
+  color:rgba(238,248,255,.55);
+  line-height:1.9;margin-bottom:20px;
+}
+.projekt-text p strong{color:var(--ice);font-weight:500}
+
+/* 3D Tilt showcase card */
+.showcase{
+  perspective:1000px;
+}
+.showcase-card{
+  border-radius:24px;overflow:hidden;
+  transform-style:preserve-3d;
+  transition:transform .08s linear;
+  position:relative;cursor:none;
+}
+.showcase-card::after{
+  content:'';position:absolute;inset:0;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.12);
+  pointer-events:none;z-index:10;
+}
+.showcase-shine{
+  position:absolute;inset:0;z-index:9;
+  pointer-events:none;border-radius:24px;
+  transition:background .05s;
+}
+.showcase-badge{
+  position:absolute;bottom:20px;left:20px;z-index:11;
+  border-radius:10px;padding:8px 14px;
+  font-family:var(--f-mono);font-size:11px;color:var(--glow);
+  letter-spacing:.1em;
+}
+
+/* ════════════════════════════════════
+   LAGEPLAN
+════════════════════════════════════ */
+#lage{background:transparent}
+.lage-frame{
+  margin-top:56px;border-radius:20px;overflow:hidden;
+}
+.lage-bar{
+  padding:12px 20px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(93,212,255,.08);
+  font-family:var(--f-mono);font-size:10px;
+  color:rgba(93,212,255,.4);letter-spacing:.12em;
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--glow);
+  box-shadow:0 0 6px var(--glow);
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.lage-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.lage-card{
+  border-radius:12px;padding:18px;cursor:none;
+  transition:all .2s;
+}
+.lage-card:hover{border-color:rgba(93,212,255,.3) !important}
+.lc-label{font-size:10px;font-family:var(--f-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.lc-val{font-family:var(--f-display);font-size:22px;font-weight:600;color:var(--glow)}
+
+/* ════════════════════════════════════
+   BECKEN — 3D stack
+════════════════════════════════════ */
+#becken{padding-top:100px}
+.becken-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;margin-top:64px;
+}
+.bcard{
+  border-radius:20px;overflow:hidden;
+  transition:transform .4s var(--ease-spring),box-shadow .4s;
+  cursor:none;position:relative;
+  transform-style:preserve-3d;
+}
+.bcard:hover{
+  transform:translateY(-10px) rotateX(4deg);
+  box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(93,212,255,.2);
+}
+
+.bcard-top{
+  height:200px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.bt-sport {background:linear-gradient(160deg,#071e40,#0d5090)}
+.bt-sprung{background:linear-gradient(160deg,#02080f,#062040)}
+.bt-kinder{background:linear-gradient(160deg,#0a3d6b,#1a7fc4)}
+
+/* animated water */
+.wave-anim{
+  position:absolute;bottom:0;left:0;width:200%;
+  animation:wflow 5s linear infinite;
+}
+@keyframes wflow{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.bcard-emoji{
+  font-size:52px;position:relative;z-index:2;
+  filter:drop-shadow(0 0 24px rgba(93,212,255,.5));
+  animation:bob 3s ease-in-out infinite alternate;
+}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+
+.bcard-tag{
+  position:absolute;top:14px;right:14px;z-index:3;
+  border-radius:8px;padding:4px 10px;
+  font-family:var(--f-mono);font-size:10px;color:var(--glow);letter-spacing:.08em;
+}
+
+.bcard-body{padding:24px}
+.bcard-title{
+  font-family:var(--f-display);font-size:26px;font-weight:700;
+  color:var(--white);margin-bottom:6px;letter-spacing:.02em;
+}
+.bcard-desc{
+  font-size:13px;font-weight:300;color:var(--muted);
+  line-height:1.65;margin-bottom:18px;
+}
+.bcard-specs{border-top:1px solid rgba(255,255,255,.06)}
+.bspec{
+  display:flex;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:13px;
+}
+.bspec:last-child{border-bottom:none}
+.bsk{color:var(--muted);font-weight:300}
+.bsv{color:var(--ice);font-weight:500}
+
+/* ════════════════════════════════════
+   TECHNIK
+════════════════════════════════════ */
+#technik{padding-top:100px}
+.tech-mosaic{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;margin-top:64px;
+  border-radius:20px;overflow:hidden;
+}
+.tcell{
+  padding:32px 28px;background:rgba(3,12,28,.8);
+  position:relative;overflow:hidden;
+  transition:background .3s;cursor:none;
+}
+.tcell::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--glow),transparent);
+  transform:scaleX(0);transition:transform .4s;
+}
+.tcell:hover{background:rgba(7,20,43,.9)}
+.tcell:hover::before{transform:scaleX(1)}
+
+.tc-ico{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:14px;
+  border:1px solid rgba(93,212,255,.15);
+  background:rgba(93,212,255,.05);
+  transition:all .2s;
+}
+.tcell:hover .tc-ico{
+  border-color:var(--glow);
+  background:rgba(93,212,255,.1);
+  box-shadow:0 0 20px rgba(93,212,255,.15);
+}
+.tc-title{
+  font-family:var(--f-ui);font-size:13px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ice);margin-bottom:12px;
+}
+.tc-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.tc-list li{
+  font-size:13px;font-weight:300;color:var(--muted);
+  display:flex;gap:7px;line-height:1.5;
+}
+.tc-list li::before{content:'›';color:var(--sky);flex-shrink:0}
+
+/* ════════════════════════════════════
+   ZEITPLAN
+════════════════════════════════════ */
+#zeitplan{padding-top:100px}
+.timeline{margin-top:64px;position:relative}
+.tl-spine{
+  position:absolute;left:28px;top:0;bottom:0;
+  width:1px;background:linear-gradient(to bottom,var(--glow),rgba(93,212,255,.1));
+}
+.tl-row{
+  display:grid;grid-template-columns:64px 1fr;
+  gap:24px;margin-bottom:28px;
+}
+.tl-marker{
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:6px;position:relative;
+}
+.tl-dot{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--abyss);border:2px solid var(--muted);
+  position:relative;z-index:1;flex-shrink:0;
+  transition:all .3s;
+}
+.tl-row:hover .tl-dot{
+  border-color:var(--glow);
+  box-shadow:0 0 16px rgba(93,212,255,.5);
+  background:var(--glow);
+}
+.tl-yr{
+  font-family:var(--f-mono);font-size:9px;
+  color:var(--sky);letter-spacing:.1em;margin-top:6px;
+  text-align:center;white-space:nowrap;
+}
+.tl-card{
+  border-radius:14px;padding:22px 24px;
+  transition:all .2s;cursor:none;
+}
+.tl-row:hover .tl-card{border-color:rgba(93,212,255,.2) !important}
+.tl-row:hover .tl-card{transform:translateX(4px)}
+.tl-card h3{
+  font-family:var(--f-display);font-size:20px;font-weight:700;
+  color:var(--white);margin-bottom:4px;
+}
+.tl-dur{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--f-mono);font-size:10px;
+  color:var(--hot);background:rgba(255,119,48,.08);
+  padding:2px 9px;border-radius:100px;margin-bottom:10px;letter-spacing:.06em;
+}
+.tl-card p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.7}
+.tl-final .tl-dot{border-color:var(--glow);background:rgba(93,212,255,.2)}
+.tl-final .tl-card{background:rgba(93,212,255,.04) !important;border-color:rgba(93,212,255,.18) !important}
+.tl-final h3{color:var(--glow)}
+
+/* ════════════════════════════════════
+   KOSTEN
+════════════════════════════════════ */
+#kosten{padding-top:100px}
+.kosten-layout{
+  display:grid;grid-template-columns:1fr 1.6fr;
+  gap:40px;margin-top:64px;align-items:start;
+}
+.kosten-hero{
+  border-radius:20px;padding:44px 36px;
+  text-align:center;position:sticky;top:84px;
+}
+.kh-tag{font-family:var(--f-mono);font-size:10px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+.kh-num{
+  font-family:var(--f-display);font-size:64px;font-weight:700;
+  color:var(--glow);line-height:1;
+  text-shadow:0 0 40px rgba(93,212,255,.4);margin-bottom:4px;
+}
+.kh-unit{font-size:13px;color:var(--muted);margin-bottom:36px}
+.kh-bars{display:flex;flex-direction:column;gap:11px;text-align:left}
+.kb-row{}
+.kb-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.kb-track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.kb-fill{
+  height:100%;width:0%;border-radius:2px;
+  background:linear-gradient(90deg,var(--azure),var(--glow));
+  box-shadow:0 0 8px rgba(93,212,255,.4);
+  transition:width 1.2s var(--ease-out-expo);
+}
+
+.kosten-rows{display:flex;flex-direction:column;gap:2px}
+.kr{
+  display:grid;grid-template-columns:80px 1fr auto;
+  align-items:center;gap:16px;
+  padding:16px 20px;border-radius:10px;
+  transition:background .2s;cursor:none;
+}
+.kr:hover{background:rgba(93,212,255,.04)}
+.kr.total{background:rgba(93,212,255,.05);border-radius:12px;margin-top:6px}
+.kr.total .kr-desc{color:var(--ice)}
+.kr.total .kr-val{color:var(--glow);font-size:16px}
+.kr-kg{font-family:var(--f-mono);font-size:10px;color:var(--sky);opacity:.6}
+.kr-desc{font-size:14px;font-weight:300;color:rgba(238,248,255,.55)}
+.kr-val{font-family:var(--f-mono);font-size:13px;color:var(--ice);white-space:nowrap}
+
+.foerder-box{
+  margin-top:16px;border-radius:12px;padding:18px 20px;
+  border-left:2px solid var(--sky) !important;
+}
+.foerder-box .fb-t{font-family:var(--f-mono);font-size:10px;color:var(--sky);letter-spacing:.12em;margin-bottom:8px}
+.foerder-box p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.7}
+
+/* ════════════════════════════════════
+   IDEEN
+════════════════════════════════════ */
+#ideen{padding-top:100px}
+.ideen-masonry{columns:3;column-gap:18px;margin-top:64px}
+.icard{
+  break-inside:avoid;margin-bottom:18px;
+  border-radius:16px;padding:24px;cursor:none;
+  transition:transform .3s var(--ease-spring),box-shadow .3s;
+}
+.icard:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 0 1px rgba(93,212,255,.15)}
+.i-ico{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:12px;
+  background:rgba(93,212,255,.06);border:1px solid rgba(93,212,255,.1);
+  transition:all .2s;
+}
+.icard:hover .i-ico{background:rgba(93,212,255,.12);box-shadow:0 0 16px rgba(93,212,255,.15)}
+.icard h3{font-family:var(--f-display);font-size:19px;font-weight:700;color:var(--white);margin-bottom:6px}
+.icard p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.65}
+
+/* ════════════════════════════════════
+   NACHHALTIGKEIT
+════════════════════════════════════ */
+#nachhaltigkeit{padding-top:100px}
+.sustain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:64px}
+.scard{
+  border-radius:16px;padding:30px;position:relative;overflow:hidden;
+  cursor:none;transition:border-color .2s;
+}
+.scard-num{
+  font-family:var(--f-display);font-size:72px;
+  color:rgba(93,212,255,.05);line-height:1;
+  position:absolute;top:8px;right:16px;font-weight:700;
+}
+.scard h3{font-family:var(--f-display);font-size:20px;font-weight:700;color:var(--ice);margin-bottom:8px}
+.scard p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.7}
+
+/* ════════════════════════════════════
+   ABOUT
+════════════════════════════════════ */
+#about{padding-top:100px;padding-bottom:80px}
+.about-grid{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:64px;margin-top:64px;align-items:start;
+}
+.about-text p{font-size:15px;font-weight:300;color:rgba(238,248,255,.5);line-height:1.9;margin-bottom:18px}
+.about-text p strong{color:var(--ice);font-weight:500}
+
+.about-data{border-radius:16px;overflow:hidden}
+.ad-header{
+  padding:14px 20px;
+  border-bottom:1px solid rgba(93,212,255,.08);
+  font-family:var(--f-mono);font-size:10px;
+  color:var(--sky);letter-spacing:.14em;text-transform:uppercase;
+}
+.ad-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:13px;transition:background .15s;cursor:none;
+}
+.ad-row:last-child{border-bottom:none}
+.ad-row:hover{background:rgba(93,212,255,.03)}
+.ad-k{color:var(--muted);font-weight:300}
+.ad-v{color:var(--ice);font-weight:500}
+
+/* ════════════════════════════════════
+   FOOTER
+════════════════════════════════════ */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:56px 80px 36px;
+  max-width:1400px;margin:0 auto;
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:48px}
+.footer-brand h2{font-family:var(--f-display);font-size:22px;font-weight:700;color:var(--white);margin-bottom:12px;letter-spacing:.03em}
+.footer-brand p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.8;max-width:320px}
+.footer-col h4{font-family:var(--f-mono);font-size:10px;color:var(--sky);letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-col a{font-size:13px;font-weight:300;color:var(--muted);text-decoration:none;transition:color .2s;cursor:none}
+.footer-col a:hover{color:var(--glow)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:24px;border-top:1px solid rgba(255,255,255,.04);
+  font-family:var(--f-mono);font-size:10px;color:rgba(61,106,138,.6);letter-spacing:.05em;
+}
+.footer-stamp{
+  background:rgba(93,212,255,.04);border:1px solid rgba(93,212,255,.1);
+  border-radius:6px;padding:4px 12px;font-size:10px;color:rgba(93,212,255,.35);letter-spacing:.1em;
+}
+
+/* ════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════ */
+.r{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo)}
+.r.show{opacity:1;transform:none}
+.r-l{opacity:0;transform:translateX(-36px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo)}
+.r-l.show{opacity:1;transform:none}
+.r-r{opacity:0;transform:translateX(36px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo)}
+.r-r.show{opacity:1;transform:none}
+.stg>*{opacity:0;transform:translateY(24px);transition:opacity .5s var(--ease-out-expo),transform .5s var(--ease-out-expo)}
+.stg.show>*:nth-child(1){opacity:1;transform:none;transition-delay:.00s}
+.stg.show>*:nth-child(2){opacity:1;transform:none;transition-delay:.07s}
+.stg.show>*:nth-child(3){opacity:1;transform:none;transition-delay:.14s}
+.stg.show>*:nth-child(4){opacity:1;transform:none;transition-delay:.21s}
+.stg.show>*:nth-child(5){opacity:1;transform:none;transition-delay:.28s}
+.stg.show>*:nth-child(6){opacity:1;transform:none;transition-delay:.35s}
+.stg.show>*:nth-child(7){opacity:1;transform:none;transition-delay:.42s}
+.stg.show>*:nth-child(8){opacity:1;transform:none;transition-delay:.49s}
+.stg.show>*:nth-child(9){opacity:1;transform:none;transition-delay:.56s}
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media(max-width:1100px){
+  section{padding:80px 48px}
+  .hero{padding:0 48px}
+  .hero-inner{grid-template-columns:1fr;gap:40px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .becken-grid,.tech-mosaic,.sustain-grid{grid-template-columns:1fr}
+  .kosten-layout,.projekt-grid,.about-grid{grid-template-columns:1fr;gap:40px}
+  .ideen-masonry{columns:2}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .kosten-hero{position:static}
+  nav{width:calc(100% - 32px);padding:0 18px}
+  .nav-links{display:none}
+}
+@media(max-width:720px){
+  section{padding:64px 24px}
+  .hero{padding:0 24px}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .lage-cards{grid-template-columns:1fr}
+  .ideen-masonry{columns:1}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  footer{padding:40px 24px 28px}
+  .footer-bottom{flex-direction:column;gap:10px;text-align:center}
+}
+</style>
 </head>
 <body>
 
-<nav>
-    <a href="#" class="nav-logo"><span>🏊</span> BURGWANG</a>
-    <div class="search-container">
-        <span>🔍</span>
-        <input type="text" id="globalSearch" placeholder="Suche nach Becken, Kosten, Technik..." onkeyup="performSearch()">
-    </div>
-</nav>
+<div id="cur"></div>
+<div id="cur-ring"></div>
 
-<section class="hero" id="home">
-    <div class="hero-3d-card" id="heroCard">
-        <div style="transform: translateZ(30px)">
-            <p style="letter-spacing: 5px; opacity: 0.7; margin-bottom: 10px;">VISION 2026</p>
-            <h1>Baggersee<br>Burgwang</h1>
-            <p style="max-width: 600px; margin: 20px auto; font-size: 1.2rem;">Das nachhaltigste Freibad-Projekt im Allgäu. Kristallklares Wasser trifft auf futuristische Architektur.</p>
-        </div>
-    </div>
-</section>
-
-<div class="section-container" id="mainContent">
-    <!-- Projekt Info -->
-    <div class="glass-card searchable">
-        <h3>📍 Das Projekt</h3>
-        <p>Ein 3,2 Hektar großes Areal direkt am Baggersee. Geplante Eröffnung ist im Jahr 2029 mit Fokus auf ökologische Integration.</p>
-    </div>
-
-    <!-- Becken Info -->
-    <div class="glass-card searchable">
-        <h3>🌊 Sportbecken</h3>
-        <p>50-Meter Bahnen mit Edelstahl-Auskleidung. 1.770 m² Wasserfläche für Profis und Amateure.</p>
-    </div>
-
-    <!-- Technik Info -->
-    <div class="glass-card searchable">
-        <h3>⚙️ Technik</h3>
-        <p>Photovoltaik-Heizung und biologische Filterstufen sorgen für einen CO2-neutralen Betrieb des Schwimmbads.</p>
-    </div>
-
-    <!-- Kosten Info -->
-    <div class="glass-card searchable">
-        <h3>💰 Budget</h3>
-        <p>Der Kostenrahmen liegt bei ca. 10,3 Millionen Euro, finanziert durch Gemeinde und Fördergelder.</p>
-    </div>
+<!-- Background scene -->
+<div id="scene">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+  <div id="stars"></div>
 </div>
 
+<!-- Search overlay -->
+<div id="search-overlay">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <input id="search-input" type="text" placeholder="Suche im Projekt… z.B. Becken, Kosten, Zeitplan" autocomplete="off">
+      <div class="search-icon">⌕</div>
+    </div>
+    <button id="search-close">ESC SCHLIESSEN</button>
+  </div>
+  <div id="search-results"></div>
+  <div class="sr-hint">↑↓ Navigieren · Enter Öffnen · Esc Schließen</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav" class="glass-heavy">
+  <a href="#" class="nav-brand">
+    <div class="nav-mark">🏊</div>
+    Freibad Burgwang
+  </a>
+  <ul class="nav-links">
+    <li><a href="#projekt">Projekt</a></li>
+    <li><a href="#lage">Lage</a></li>
+    <li><a href="#becken">Becken</a></li>
+    <li><a href="#technik">Technik</a></li>
+    <li><a href="#zeitplan">Zeitplan</a></li>
+    <li><a href="#kosten">Kosten</a></li>
+    <li><a href="#ideen">Ideen</a></li>
+    <li><a href="#about">Info</a></li>
+  </ul>
+  <div id="search-btn" title="Suche">⌕</div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<main>
+<div class="hero" id="home">
+  <div class="hero-grid"></div>
+
+  <div class="hero-inner" style="max-width:1400px;margin:0 auto;width:100%">
+    <div>
+      <h1 class="hero-headline">
+        <span class="small">Schulprojekt 2026 · Isny im Allgäu</span>
+        Freibad
+        <span class="em">Baggersee</span>
+        Burgwang
+      </h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-desc">Konzeptentwurf für ein <strong>modernes, nachhaltiges Freibad</strong> direkt am natürlichen Baggersee in Burgwang — für die ganze Region Isny im Allgäu.</p>
+      <div class="hero-actions">
+        <a href="#projekt" class="btn-3d btn-3d-primary"><span>Projekt entdecken</span><span>→</span></a>
+        <a href="#lage" class="btn-3d btn-3d-glass"><span>Lageplan</span></a>
+      </div>
+    </div>
+
+    <div class="hero-stats stg">
+      <div class="hstat glass"><div class="hstat-num">3,2 ha</div><div class="hstat-label">Gesamtgelände</div></div>
+      <div class="hstat glass"><div class="hstat-num">1.770 m²</div><div class="hstat-label">Wasserfläche</div></div>
+      <div class="hstat glass"><div class="hstat-num">10,3 Mio</div><div class="hstat-label">Kostenrahmen €</div></div>
+      <div class="hstat glass"><div class="hstat-num">2029</div><div class="hstat-label">Eröffnung</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PROJEKT ══════════════ -->
+<section id="projekt">
+  <div class="s-eyebrow r">Das Projekt</div>
+  <h2 class="s-title r">Ein <strong>Freibad</strong><br>für die Region</h2>
+
+  <div class="projekt-grid">
+    <div class="projekt-text r-l">
+      <p>Der <strong>Baggersee Burgwang</strong> liegt unweit des Ortskerns von Isny im Allgäu und bietet mit seinem kristallklaren Wasser und der idyllischen Allgäu-Landschaft ideale Voraussetzungen für ein öffentliches Schwimmbad.</p>
+      <p>Das geplante Freibad kombiniert <strong>moderne Sportinfrastruktur</strong> mit dem natürlichen Flair des Sees. Ein 50-Meter-Sportbecken, Sprungturm, Kinderbecken und die integrierte Naturbadefläche am Baggersee machen diesen Ort einzigartig.</p>
+      <p>Der Entwurf legt besonderen Wert auf <strong>Nachhaltigkeit und Barrierefreiheit</strong>: Solarenergie, Wärmepumpe und Regenwassernutzung schaffen ein ökologisches Vorzeigeprojekt für die Stadt Isny.</p>
+      <div style="margin-top:28px">
+        <a href="#becken" class="btn-3d btn-3d-glass"><span>Becken entdecken</span><span>↓</span></a>
+      </div>
+    </div>
+
+    <div class="showcase r-r">
+      <div class="showcase-card" id="sc">
+        <div class="showcase-shine" id="ss"></div>
+        <svg viewBox="0 0 480 360" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="480" height="360" fill="#010a1a"/>
+          <rect width="480" height="200" fill="url(#skyGrad)"/>
+          <defs>
+            <radialGradient id="skyGrad" cx="50%" cy="0%" r="100%">
+              <stop offset="0%" stop-color="#03122b"/>
+              <stop offset="100%" stop-color="#010a1a"/>
+            </radialGradient>
+            <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#0d4070" stop-opacity=".8"/>
+              <stop offset="100%" stop-color="#010a1a"/>
+            </linearGradient>
+          </defs>
+          <!-- Stars -->
+          <circle cx="60" cy="25" r="1" fill="#b8ecff" opacity=".7"/>
+          <circle cx="180" cy="15" r="1.5" fill="#b8ecff" opacity=".5"/>
+          <circle cx="360" cy="35" r="1" fill="#b8ecff" opacity=".8"/>
+          <circle cx="420" cy="12" r="1" fill="#b8ecff" opacity=".6"/>
+          <circle cx="280" cy="50" r="1" fill="#b8ecff" opacity=".4"/>
+          <circle cx="90" cy="70" r="1.5" fill="#b8ecff" opacity=".3"/>
+          <circle cx="440" cy="55" r="1" fill="#b8ecff" opacity=".5"/>
+          <!-- Mountains -->
+          <polygon points="0,200 110,85 220,200" fill="#072010"/>
+          <polygon points="90,200 210,55 340,200" fill="#051a0c"/>
+          <polygon points="240,200 380,48 480,200" fill="#041408"/>
+          <!-- Snow -->
+          <polygon points="210,55 226,82 194,82" fill="rgba(184,236,255,.15)"/>
+          <polygon points="380,48 395,75 365,75" fill="rgba(184,236,255,.12)"/>
+          <!-- Water -->
+          <rect x="0" y="198" width="480" height="162" fill="url(#waterGrad)"/>
+          <!-- Glow reflection -->
+          <ellipse cx="240" cy="245" rx="160" ry="35" fill="rgba(93,212,255,.06)"/>
+          <!-- Water shimmer -->
+          <path d="M0,215 Q120,210 240,215 Q360,220 480,215 L480,224 Q360,229 240,224 Q120,219 0,224Z" fill="rgba(93,212,255,.08)"/>
+          <path d="M0,245 Q160,239 320,245 Q400,248 480,242 L480,252 Q400,258 320,252 Q160,258 0,252Z" fill="rgba(93,212,255,.05)"/>
+          <!-- Pool outline glow -->
+          <rect x="245" y="205" width="185" height="78" rx="4" fill="rgba(93,212,255,.04)" stroke="rgba(93,212,255,.3)" stroke-width="1" stroke-dasharray="5 3"/>
+          <text x="337" y="248" fill="rgba(93,212,255,.5)" font-size="10" text-anchor="middle" font-family="'JetBrains Mono',monospace">FREIBAD</text>
+          <!-- Shore -->
+          <path d="M0,196 Q240,188 480,193 L480,205 L0,205Z" fill="#0a2010"/>
+          <!-- Cyan moon -->
+          <circle cx="400" cy="38" r="14" fill="none" stroke="rgba(93,212,255,.15)" stroke-width="1"/>
+          <circle cx="400" cy="38" r="10" fill="rgba(93,212,255,.06)"/>
+          <!-- Moon reflection -->
+          <ellipse cx="400" cy="238" rx="8" ry="3" fill="rgba(93,212,255,.08)"/>
+        </svg>
+        <div class="showcase-badge glass"><span style="margin-right:6px">📍</span>47.6924°N / 10.0763°O · Burgwang</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LAGEPLAN ══════════════ -->
+<section id="lage">
+  <div class="s-eyebrow r">Standort</div>
+  <h2 class="s-title r">Lage&shy;<strong>plan</strong></h2>
+  <p class="s-body r">Baggersee Burgwang — optimale Lage mit direktem Seeanschluss und guter Verkehrsanbindung.</p>
+
+  <div class="lage-frame glass-heavy r">
+    <div class="lage-bar">
+      <div class="live-dot"></div>
+      LAGEPLAN · MASSSTAB ~1:2000 · PLAN ISN-FB-2026-001 · 47.6924°N / 10.0763°O
+    </div>
+    <svg viewBox="0 0 860 500" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:580px">
+      <defs>
+        <pattern id="pg" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(93,212,255,0.07)" stroke-width=".5"/>
+        </pattern>
+      </defs>
+      <rect width="860" height="500" fill="#030d1e"/>
+      <rect width="860" height="500" fill="url(#pg)"/>
+      <!-- Greenery -->
+      <rect width="860" height="500" fill="#061a08" opacity=".18"/>
+      <!-- Stream -->
+      <path d="M0,100 Q55,118 68,155 Q88,198 55,260 Q30,320 50,378 Q65,428 35,466 L0,490" fill="none" stroke="rgba(93,212,255,.3)" stroke-width="8" opacity=".6"/>
+      <!-- Baggersee -->
+      <ellipse cx="305" cy="272" rx="122" ry="98" fill="rgba(13,64,112,.4)"/>
+      <ellipse cx="305" cy="272" rx="122" ry="98" fill="none" stroke="rgba(93,212,255,.35)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <ellipse cx="305" cy="272" rx="70" ry="56" fill="rgba(93,212,255,.05)"/>
+      <text x="305" y="265" fill="rgba(93,212,255,.75)" font-size="11" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="bold">BAGGERSEE</text>
+      <text x="305" y="281" fill="rgba(93,212,255,.35)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">Tiefe bis 12 m</text>
+      <!-- Site fence -->
+      <rect x="450" y="115" width="382" height="322" fill="none" stroke="rgba(93,212,255,.25)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="641" y="107" fill="rgba(93,212,255,.35)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" letter-spacing="1.5">FREIBADGELÄNDE · EINGEZÄUNT</text>
+      <!-- Entrance -->
+      <rect x="513" y="115" width="77" height="42" fill="rgba(7,18,36,.9)" stroke="rgba(93,212,255,.4)" stroke-width="1" rx="2"/>
+      <text x="551" y="133" fill="rgba(93,212,255,.7)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">EINGANG</text>
+      <text x="551" y="146" fill="rgba(93,212,255,.35)" font-size="7.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">Kasse · WC</text>
+      <!-- Umkleide -->
+      <rect x="450" y="178" width="94" height="60" fill="rgba(6,16,32,.85)" stroke="rgba(93,212,255,.2)" stroke-width="1" rx="2"/>
+      <text x="497" y="206" fill="rgba(238,248,255,.55)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">UMKLEIDE</text>
+      <text x="497" y="219" fill="rgba(93,212,255,.35)" font-size="7.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">180 m²</text>
+      <!-- Technik -->
+      <rect x="450" y="252" width="74" height="50" fill="rgba(2,6,12,.9)" stroke="rgba(93,212,255,.15)" stroke-width="1" rx="2"/>
+      <text x="487" y="278" fill="rgba(180,200,220,.5)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">TECHNIK</text>
+      <!-- Sport pool -->
+      <rect x="558" y="186" width="232" height="92" rx="3" fill="rgba(13,64,112,.3)" stroke="rgba(93,212,255,.5)" stroke-width="1.5"/>
+      <line x1="558" y1="202" x2="790" y2="202" stroke="rgba(93,212,255,.15)" stroke-width=".7"/>
+      <line x1="558" y1="218" x2="790" y2="218" stroke="rgba(93,212,255,.15)" stroke-width=".7"/>
+      <line x1="558" y1="234" x2="790" y2="234" stroke="rgba(93,212,255,.15)" stroke-width=".7"/>
+      <line x1="558" y1="250" x2="790" y2="250" stroke="rgba(93,212,255,.15)" stroke-width=".7"/>
+      <line x1="558" y1="266" x2="790" y2="266" stroke="rgba(93,212,255,.15)" stroke-width=".7"/>
+      <text x="674" y="231" fill="rgba(238,248,255,.8)" font-size="10" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="bold">SPORTBECKEN 50 m</text>
+      <text x="674" y="247" fill="rgba(93,212,255,.45)" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">6 Bahnen · 1,35–2,00 m Tiefe</text>
+      <!-- Maßkette -->
+      <line x1="558" y1="172" x2="790" y2="172" stroke="rgba(255,119,48,.45)" stroke-width=".8"/>
+      <line x1="558" y1="168" x2="558" y2="176" stroke="rgba(255,119,48,.45)"/>
+      <line x1="790" y1="168" x2="790" y2="176" stroke="rgba(255,119,48,.45)"/>
+      <text x="674" y="169" fill="rgba(255,119,48,.55)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">50,00 m</text>
+      <!-- Sprung -->
+      <rect x="558" y="288" width="74" height="60" rx="2" fill="rgba(4,10,22,.85)" stroke="rgba(93,212,255,.35)" stroke-width="1.5"/>
+      <text x="595" y="314" fill="rgba(238,248,255,.65)" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">SPRUNG</text>
+      <text x="595" y="327" fill="rgba(93,212,255,.4)" font-size="7.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">20×20m</text>
+      <circle cx="595" cy="297" r="4" fill="rgba(255,119,48,.7)" stroke="rgba(255,119,48,.3)" stroke-width="1"/>
+      <!-- Kinder -->
+      <ellipse cx="714" cy="338" rx="50" ry="40" fill="rgba(93,212,255,.12)" stroke="rgba(93,212,255,.4)" stroke-width="1.5"/>
+      <text x="714" y="332" fill="rgba(238,248,255,.65)" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">KINDER</text>
+      <text x="714" y="345" fill="rgba(93,212,255,.4)" font-size="7.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">0–0,60m</text>
+      <!-- Liegewiese -->
+      <rect x="558" y="358" width="268" height="68" fill="rgba(5,25,8,.55)" stroke="rgba(46,125,50,.25)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="692" y="392" fill="rgba(102,187,106,.5)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">LIEGEWIESE · 3.200 m²</text>
+      <!-- Gastro -->
+      <rect x="636" y="124" width="70" height="46" fill="rgba(14,30,10,.8)" stroke="rgba(100,200,80,.3)" stroke-width="1" rx="2"/>
+      <text x="671" y="146" fill="rgba(150,220,100,.6)" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">GASTRO</text>
+      <text x="671" y="159" fill="rgba(100,200,80,.4)" font-size="7.5" text-anchor="middle" font-family="'JetBrains Mono',monospace">Kiosk</text>
+      <!-- Erste Hilfe -->
+      <rect x="724" y="124" width="50" height="36" fill="rgba(30,6,6,.9)" stroke="rgba(255,80,80,.35)" stroke-width="1" rx="2"/>
+      <text x="749" y="145" fill="rgba(255,120,120,.6)" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">ERSTE H. ✚</text>
+      <!-- Parkplatz -->
+      <rect x="0" y="440" width="448" height="60" fill="rgba(8,15,24,.7)" stroke="rgba(61,106,138,.25)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="224" y="470" fill="rgba(61,106,138,.5)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">PARKPLATZ · ca. 150 Stellplätze</text>
+      <!-- Path -->
+      <path d="M450,415 Q400,404 356,384 Q322,368 294,352" fill="none" stroke="rgba(255,200,50,.35)" stroke-width="2.5" stroke-dasharray="5 3"/>
+      <text x="376" y="402" fill="rgba(255,200,50,.4)" font-size="7.5" font-family="'JetBrains Mono',monospace" transform="rotate(-12,376,402)">ZUGANG NATURBAD</text>
+      <!-- Road -->
+      <path d="M546,115 L546,68 L688,68" fill="none" stroke="rgba(61,106,138,.4)" stroke-width="2.5"/>
+      <text x="612" y="60" fill="rgba(61,106,138,.45)" font-size="9" font-family="'JetBrains Mono',monospace">ZUFAHRT L 265</text>
+      <polygon points="688,63 698,68 688,73" fill="rgba(61,106,138,.4)"/>
+      <!-- North -->
+      <g transform="translate(826,36)">
+        <circle r="18" fill="none" stroke="rgba(93,212,255,.25)" stroke-width="1"/>
+        <polygon points="0,-13 4,6 0,2 -4,6" fill="rgba(93,212,255,.6)"/>
+        <polygon points="0,13 4,-6 0,-2 -4,-6" fill="rgba(93,212,255,.15)"/>
+        <text y="4" font-size="8" fill="rgba(93,212,255,.6)" text-anchor="middle" font-family="'JetBrains Mono',monospace">N</text>
+      </g>
+      <!-- Scale -->
+      <g transform="translate(20,490)">
+        <line x1="0" y1="0" x2="86" y2="0" stroke="rgba(93,212,255,.35)" stroke-width="1.5"/>
+        <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(93,212,255,.35)" stroke-width="1.5"/>
+        <line x1="43" y1="-2" x2="43" y2="2" stroke="rgba(93,212,255,.25)"/>
+        <line x1="86" y1="-4" x2="86" y2="4" stroke="rgba(93,212,255,.35)" stroke-width="1.5"/>
+        <text x="0" y="13" fill="rgba(93,212,255,.35)" font-size="8" font-family="'JetBrains Mono',monospace">0</text>
+        <text x="36" y="13" fill="rgba(93,212,255,.35)" font-size="8" font-family="'JetBrains Mono',monospace">50m</text>
+        <text x="74" y="13" fill="rgba(93,212,255,.35)" font-size="8" font-family="'JetBrains Mono',monospace">100m</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="lage-cards stg">
+    <div class="lage-card glass"><div class="lc-label">Koordinaten</div><div class="lc-val">47.6924°N · 10.08°O</div></div>
+    <div class="lage-card glass"><div class="lc-label">Gesamtfläche</div><div class="lc-val">ca. 3,2 ha</div></div>
+    <div class="lage-card glass"><div class="lc-label">Zufahrt</div><div class="lc-val">L 265 Burgwang</div></div>
+  </div>
+</section>
+
+<!-- ══════════════ BECKEN ══════════════ -->
+<section id="becken">
+  <div class="s-eyebrow r">Schwimmanlagen</div>
+  <h2 class="s-title r">Die drei <strong>Becken</strong></h2>
+  <p class="s-body r">Sport, Nervenkitzel und Spaß — für jeden das Richtige.</p>
+
+  <div class="becken-grid stg">
+    <div class="bcard glass-heavy">
+      <div class="bcard-top bt-sport">
+        <svg style="position:absolute;bottom:0;left:0;width:200%;animation:wflow 5s linear infinite" viewBox="0 0 400 60" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,30 C50,18 100,42 150,30 C200,18 250,42 300,30 C350,18 400,42 400,30 L400,60 L0,60Z" fill="rgba(93,212,255,.12)"/>
+          <path d="M0,40 C80,26 160,54 240,40 C320,26 400,54 400,40 L400,60 L0,60Z" fill="rgba(93,212,255,.08)"/>
+        </svg>
+        <div class="bcard-emoji">🏊</div>
+        <div class="bcard-tag glass">50 m · DIN EN 15288</div>
+      </div>
+      <div class="bcard-body">
+        <div class="bcard-title">Sportbecken</div>
+        <div class="bcard-desc">Olympisches Format — 6 Bahnen für Training, Wettkampf und Fitness. Mit professionellen Startblöcken.</div>
+        <div class="bcard-specs">
+          <div class="bspec"><span class="bsk">Länge</span><span class="bsv">50,00 m</span></div>
+          <div class="bspec"><span class="bsk">Breite</span><span class="bsv">25,00 m</span></div>
+          <div class="bspec"><span class="bsk">Bahnen</span><span class="bsv">6 Stück</span></div>
+          <div class="bspec"><span class="bsk">Tiefe</span><span class="bsv">1,35 – 2,00 m</span></div>
+          <div class="bspec"><span class="bsk">Volumen</span><span class="bsv">ca. 2.187 m³</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bcard glass-heavy">
+      <div class="bcard-top bt-sprung">
+        <svg style="position:absolute;bottom:0;left:0;width:200%;animation:wflow 7s linear infinite" viewBox="0 0 400 60" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,35 C80,20 160,52 240,35 C320,18 400,52 400,35 L400,60 L0,60Z" fill="rgba(93,212,255,.1)"/>
+        </svg>
+        <div class="bcard-emoji">🤸</div>
+        <div class="bcard-tag glass">Tiefe: 4,50 m</div>
+      </div>
+      <div class="bcard-body">
+        <div class="bcard-title">Sprungbecken</div>
+        <div class="bcard-desc">Adrenalin pur — Sprungturm mit drei Höhen und zwei Sprungbrettern. Für Einsteiger und Profis.</div>
+        <div class="bcard-specs">
+          <div class="bspec"><span class="bsk">Maße</span><span class="bsv">20 × 20 m</span></div>
+          <div class="bspec"><span class="bsk">Tiefe</span><span class="bsv">4,50 m</span></div>
+          <div class="bspec"><span class="bsk">Plattformen</span><span class="bsv">3 / 5 / 7,5 m</span></div>
+          <div class="bspec"><span class="bsk">Bretter</span><span class="bsv">1 m / 3 m</span></div>
+          <div class="bspec"><span class="bsk">Volumen</span><span class="bsv">ca. 1.800 m³</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bcard glass-heavy">
+      <div class="bcard-top bt-kinder">
+        <svg style="position:absolute;bottom:0;left:0;width:200%;animation:wflow 4s linear infinite" viewBox="0 0 400 60" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,28 C100,14 200,46 300,28 C360,18 400,36 400,28 L400,60 L0,60Z" fill="rgba(255,255,255,.1)"/>
+          <path d="M0,42 C120,30 240,56 360,42 C400,36 400,42 400,42 L400,60 L0,60Z" fill="rgba(255,255,255,.07)"/>
+        </svg>
+        <div class="bcard-emoji">👶</div>
+        <div class="bcard-tag glass">0 – 0,60 m</div>
+      </div>
+      <div class="bcard-body">
+        <div class="bcard-title">Kinderbecken</div>
+        <div class="bcard-desc">Sicherer Spaß für die Kleinen — organische Form, Wasserspielanlage und 24 m Rutsche.</div>
+        <div class="bcard-specs">
+          <div class="bspec"><span class="bsk">Fläche</span><span class="bsv">ca. 120 m²</span></div>
+          <div class="bspec"><span class="bsk">Tiefe</span><span class="bsv">0 – 0,60 m</span></div>
+          <div class="bspec"><span class="bsk">Rutsche</span><span class="bsv">24 m Länge</span></div>
+          <div class="bspec"><span class="bsk">Wassertemp.</span><span class="bsv">30 – 32 °C</span></div>
+          <div class="bspec"><span class="bsk">Wasserspiel</span><span class="bsv">integriert</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TECHNIK ══════════════ -->
+<section id="technik">
+  <div class="s-eyebrow r">Haustechnik</div>
+  <h2 class="s-title r">Technik &amp; <strong>Energie</strong></h2>
+  <p class="s-body r">Modernste Technik für sauberes Wasser und nachhaltigen Betrieb.</p>
+
+  <div class="tech-mosaic r">
+    <div class="tcell"><div class="tc-ico">💧</div><div class="tc-title">Wasseraufbereitung</div><ul class="tc-list"><li>Nach DIN EN 15288-1</li><li>Mehrschichtfiltration</li><li>Chlor + UV-Desinfektion</li><li>Umwälzung Sport: alle 2 h</li><li>Umwälzung Kinder: 30 min</li><li>2 × 200 m³ Pufferbehälter</li></ul></div>
+    <div class="tcell"><div class="tc-ico">☀️</div><div class="tc-title">Heizung &amp; Solar</div><ul class="tc-list"><li>Wärmepumpe als Hauptquelle</li><li>Solarkollektoren auf Dächern</li><li>PV-Anlage ca. 80 kWp</li><li>Wärmerückgewinnung</li><li>Sportbecken: 26–28 °C</li><li>Kinderbecken: 30–32 °C</li></ul></div>
+    <div class="tcell"><div class="tc-ico">🏗️</div><div class="tc-title">Konstruktion</div><ul class="tc-list"><li>WU-Beton C30/37 XA2</li><li>Edelstahl-Beckenauskleidung</li><li>R10 rutschfeste Beläge</li><li>Sprungturm: Edelstahl</li><li>Eingang: Holz-Glas</li><li>Extensive Dachbegrünung</li></ul></div>
+    <div class="tcell"><div class="tc-ico">🛡️</div><div class="tc-title">Sicherheit</div><ul class="tc-list"><li>Mind. 2 Rettungsschwimmer</li><li>3 erhöhte Aufsichtstürme</li><li>Videoüberwachung Becken</li><li>3 Defibrillatoren</li><li>Separater Erste-Hilfe-Raum</li><li>Notfallzugang Baggersee</li></ul></div>
+    <div class="tcell"><div class="tc-ico">♿</div><div class="tc-title">Barrierefreiheit</div><ul class="tc-list"><li>Rollstuhlrampen überall</li><li>Hebebühnen alle Becken</li><li>12 Behindertenparkplätze</li><li>Taktiles Leitsystem</li><li>Behindertengerechtes WC</li><li>Pflegebad vorhanden</li></ul></div>
+    <div class="tcell"><div class="tc-ico">🌿</div><div class="tc-title">Nachhaltigkeit</div><ul class="tc-list"><li>Regenwassernutzung</li><li>8 × E-Ladesäule PKW</li><li>4 × E-Ladesäule Fahrrad</li><li>Regionale Baustoffe</li><li>Dachbegrünung extensiv</li><li>ÖPNV-Haltestelle 200 m</li></ul></div>
+  </div>
+</section>
+
+<!-- ══════════════ ZEITPLAN ══════════════ -->
+<section id="zeitplan">
+  <div class="s-eyebrow r">Ablauf</div>
+  <h2 class="s-title r">Zeitplan <strong>2026–2029</strong></h2>
+  <p class="s-body r">Von der Machbarkeitsstudie bis zur Eröffnung — ein realistischer Fahrplan.</p>
+
+  <div class="timeline r">
+    <div class="tl-spine"></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q3 2026</div></div><div class="tl-card glass"><h3>Voruntersuchung &amp; Machbarkeit</h3><div class="tl-dur">3–4 Monate</div><p>Bodengutachten, Hydrogeologie (Grundwasser Baggersee), Umweltverträglichkeitsprüfung. Beauftragung Fachplaner für Tragwerk, TGA und Landschaft.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q4 2026</div></div><div class="tl-card glass"><h3>Vorplanung &amp; Entwurf (HOAI LP 2–3)</h3><div class="tl-dur">5–6 Monate</div><p>Vorentwurf und Entwurfsplanung. Abstimmung mit Stadt Isny, Landratsamt Ravensburg, Wasserwirtschaftsamt. Erste Bürgerbeteiligung.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q2 2027</div></div><div class="tl-card glass"><h3>Genehmigungsplanung (HOAI LP 4)</h3><div class="tl-dur">4 Monate</div><p>Einreichung Bauantrag. Wasserrechtlicher Bescheid, Betriebsgenehmigung Bäderrecht. Einholung aller Träger öffentlicher Belange.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q3–Q4 2027</div></div><div class="tl-card glass"><h3>Ausführungsplanung &amp; Vergabe (HOAI LP 5–7)</h3><div class="tl-dur">5 Monate</div><p>Detailplanung aller Gewerke. EU-weite Ausschreibung nach VOB/A, Vergabe der Bauleistungen.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q1–Q2 2028</div></div><div class="tl-card glass"><h3>Erdarbeiten &amp; Gründung</h3><div class="tl-dur">4 Monate</div><p>Erschließung, Erdaushub (Sport ca. 3.500 m³, Sprung ca. 2.000 m³), Grundwasserhaltung, Gründungspfähle, Bodenplatte WU-Beton.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q2–Q4 2028</div></div><div class="tl-card glass"><h3>Rohbau Becken &amp; Gebäude</h3><div class="tl-dur">7 Monate</div><p>Betonieren der Becken (WU-Beton C30/37 XA2), Rohbau Umkleide, Technikgebäude, Eingangsbereich. Edelstahlauskleidung Sprungbecken.</p></div></div>
+    <div class="tl-row"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Q4 2028 – Q2 2029</div></div><div class="tl-card glass"><h3>Ausbau, Technik &amp; Außenanlagen</h3><div class="tl-dur">8 Monate</div><p>Filteranlage, Solar, Elektro-MSR. Fliesenarbeiten, Begrünung, Wegebau, Parkplatz. Probebetrieb und TÜV/DIN-Abnahme.</p></div></div>
+    <div class="tl-row tl-final"><div class="tl-marker"><div class="tl-dot"></div><div class="tl-yr">Sommer 2029</div></div><div class="tl-card glass"><h3>🏊 Eröffnung Freibad Baggersee Burgwang</h3><div class="tl-dur" style="color:#5dd4ff;background:rgba(93,212,255,.08)">Saison 2029</div><p>Feierliche Eröffnung zur Freibadsaison 2029. Betrieb durch Stadt Isny im Allgäu oder Stadtwerke-Tochtergesellschaft.</p></div></div>
+  </div>
+</section>
+
+<!-- ══════════════ KOSTEN ══════════════ -->
+<section id="kosten">
+  <div class="s-eyebrow r">Budget</div>
+  <h2 class="s-title r">Kosten &amp; <strong>Finanzierung</strong></h2>
+  <p class="s-body r">Geschätzter Investitionsrahmen nach DIN 276 — als Orientierung für die Gemeindeplanung.</p>
+
+  <div class="kosten-layout">
+    <div class="kosten-hero glass-heavy r">
+      <div class="kh-tag">Gesamtkosten netto</div>
+      <div class="kh-num">10,3</div>
+      <div class="kh-unit">Mio. € · zzgl. 19 % MwSt.</div>
+      <div class="kh-bars" id="kbars">
+        <div class="kb-row"><div class="kb-meta"><span>Baukonstruktion KG 300</span><span>56 %</span></div><div class="kb-track"><div class="kb-fill" data-w="56"></div></div></div>
+        <div class="kb-row"><div class="kb-meta"><span>Techn. Anlagen KG 400</span><span>21 %</span></div><div class="kb-track"><div class="kb-fill" data-w="21"></div></div></div>
+        <div class="kb-row"><div class="kb-meta"><span>Baunebenkosten KG 700</span><span>8 %</span></div><div class="kb-track"><div class="kb-fill" data-w="8"></div></div></div>
+        <div class="kb-row"><div class="kb-meta"><span>Außenanlagen KG 500</span><span>6 %</span></div><div class="kb-track"><div class="kb-fill" data-w="6"></div></div></div>
+        <div class="kb-row"><div class="kb-meta"><span>Ausstattung KG 600</span><span>5 %</span></div><div class="kb-track"><div class="kb-fill" data-w="5"></div></div></div>
+        <div class="kb-row"><div class="kb-meta"><span>Erschließung KG 200</span><span>3 %</span></div><div class="kb-track"><div class="kb-fill" data-w="3"></div></div></div>
+      </div>
+    </div>
+
+    <div class="r">
+      <div class="kosten-rows glass-heavy" style="border-radius:20px;padding:8px">
+        <div class="kr"><span class="kr-kg">KG 200</span><span class="kr-desc">Herrichten &amp; Erschließen</span><span class="kr-val">350.000 €</span></div>
+        <div class="kr"><span class="kr-kg">KG 300</span><span class="kr-desc">Baukonstruktion (Becken, Gebäude)</span><span class="kr-val">5.800.000 €</span></div>
+        <div class="kr"><span class="kr-kg">KG 400</span><span class="kr-desc">Technische Anlagen (Filter, Solar, Elektro)</span><span class="kr-val">2.200.000 €</span></div>
+        <div class="kr"><span class="kr-kg">KG 500</span><span class="kr-desc">Außenanlagen (Wege, Bepflanzung, Zaun)</span><span class="kr-val">650.000 €</span></div>
+        <div class="kr"><span class="kr-kg">KG 600</span><span class="kr-desc">Ausstattung (Sprunganlage, Rutsche, Möbel)</span><span class="kr-val">480.000 €</span></div>
+        <div class="kr"><span class="kr-kg">KG 700</span><span class="kr-desc">Baunebenkosten (Planung, Genehmigung)</span><span class="kr-val">820.000 €</span></div>
+        <div class="kr total"><span class="kr-kg">GESAMT</span><span class="kr-desc">Richtwert netto · zzgl. MwSt.</span><span class="kr-val">ca. 10.300.000 €</span></div>
+      </div>
+      <div class="foerder-box glass" style="margin-top:14px;border-radius:12px;padding:18px 20px">
+        <div class="fb-t">Mögliche Förderquellen</div>
+        <p style="font-size:13px;font-weight:300;color:var(--muted);line-height:1.7">LEADER-Programm (EU) · Sportstättenbauförderprogramm BW · KfW-Kommunalkredit · Stadtentwicklungsfonds · Regionale Sponsoren</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ IDEEN ══════════════ -->
+<section id="ideen">
+  <div class="s-eyebrow r">Mehr als ein Bad</div>
+  <h2 class="s-title r">Ideen &amp; <strong>Erweiterungen</strong></h2>
+  <p class="s-body r">Das Freibad als Freizeitzentrum für die ganze Region.</p>
+
+  <div class="ideen-masonry stg">
+    <div class="icard glass"><div class="i-ico">⛵</div><h3>Baggersee-Naturzone</h3><p>Der natürliche Baggersee als ergänzende Naturschwimmzone — klarstes Wasser, bis 12 m tief, eingebunden ins Gesamtkonzept.</p></div>
+    <div class="icard glass"><div class="i-ico">🧖</div><h3>Sauna am See</h3><p>Außensauna direkt am Baggersee. Finnische Sauna, Biosauna und Tauchbecken ins natürliche Seewasser — einzigartig im Allgäu.</p></div>
+    <div class="icard glass"><div class="i-ico">📱</div><h3>Freibad-App</h3><p>Online-Ticketing, Echtzeit-Auslastungsanzeige, Bahnreservierung und digitaler Saisonpass per Smartphone.</p></div>
+    <div class="icard glass"><div class="i-ico">🏐</div><h3>Freizeitanlagen</h3><p>Beachvolleyball, Tischtennis, Beachsoccer und Spielplatz — das Gelände als Ganzjahres-Freizeitpark für die Region.</p></div>
+    <div class="icard glass"><div class="i-ico">🎒</div><h3>Schulen &amp; Vereine</h3><p>Kooperationen für Schwimmunterricht, Vereinsschwimmen und DLRG-Rettungsschwimmerausbildung.</p></div>
+    <div class="icard glass"><div class="i-ico">🌙</div><h3>Nachtschwimmen</h3><p>Abendöffnung bis 22 Uhr — atmosphärische Beleuchtung, Schwimmen unterm Sternenhimmel und Live-Musik am See.</p></div>
+    <div class="icard glass"><div class="i-ico">🍺</div><h3>Biergarten</h3><p>Regionaler Biergarten mit Allgäu-Küche, Eisbar am Becken und frisch gezapftem Bier vom Fass.</p></div>
+    <div class="icard glass"><div class="i-ico">🚲</div><h3>Mobilitätskonzept</h3><p>Shuttlebus vom Bahnhof, E-Bike-Verleih, E-Ladesäulen und sichere Radwege für autoarme Anreise.</p></div>
+    <div class="icard glass"><div class="i-ico">🎉</div><h3>Events &amp; Kurse</h3><p>Schwimmfeste, Aquafitness, Wasserball-Liga und Sommerfeste — das Bad als kulturelles Zentrum Isnys.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════ NACHHALTIGKEIT ══════════════ -->
+<section id="nachhaltigkeit">
+  <div class="s-eyebrow r">Ökologie</div>
+  <h2 class="s-title r">Nachhaltig<strong>keit</strong></h2>
+  <p class="s-body r">Ein Vorzeigeprojekt für ökologisches Bauen und Betreiben.</p>
+
+  <div class="sustain-grid stg">
+    <div class="scard glass"><div class="scard-num">01</div><h3>Solar &amp; PV</h3><p>Ca. 80 kWp PV-Anlage auf Gebäudedächern. Solarkollektoren zur Beckenwasservorwärmung decken ca. 60 % des Wärmebedarfs.</p></div>
+    <div class="scard glass"><div class="scard-num">02</div><h3>Wärmepumpe</h3><p>Sole-Wasser-Wärmepumpe nutzt konstante Grundwassertemperatur. Kombiniert mit PV nahezu CO₂-neutraler Betrieb angestrebt.</p></div>
+    <div class="scard glass"><div class="scard-num">03</div><h3>Regenwasser</h3><p>Gesammeltes Regenwasser für WC-Spülung und Bewässerung. Zisternen ca. 80 m³ reduzieren Trinkwasserverbrauch deutlich.</p></div>
+    <div class="scard glass"><div class="scard-num">04</div><h3>Dachbegrünung</h3><p>Extensive Begrünung aller Flachdächer reduziert Regenwasserabfluss und schafft Lebensraum für Insekten und Vögel.</p></div>
+    <div class="scard glass"><div class="scard-num">05</div><h3>Regionale Materialien</h3><p>Holz aus Allgäu-Wäldern für Überdachungen. Betonzuschläge aus der Region. Kurze Transportwege als Klimaschutzbeitrag.</p></div>
+    <div class="scard glass"><div class="scard-num">06</div><h3>Elektromobilität</h3><p>8 E-Ladesäulen PKW, 4 Fahrrad. E-Bike-Verleih am Eingang. Shuttlebus-Kooperation mit der Stadt Isny.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════ ABOUT ══════════════ -->
+<section id="about">
+  <div class="s-eyebrow r">Info</div>
+  <h2 class="s-title r">Über das <strong>Schulprojekt</strong></h2>
+
+  <div class="about-grid">
+    <div class="about-text r-l">
+      <p>Diese Website entstand als <strong>Schulprojekt</strong> und zeigt einen konzeptuellen Entwurf für ein öffentliches Freibad am Baggersee in Burgwang bei Isny im Allgäu. Alle Pläne, Maße und Kostenschätzungen sind Richtwerte für einen Vorentwurf.</p>
+      <p>Der Entwurf orientiert sich an realen Planungsgrundlagen: <strong>DIN EN 15288-1</strong> für Schwimmbäder, dem Honorarrecht für Architekten <strong>(HOAI)</strong>, Vergaberecht <strong>(VOB/A)</strong> sowie den Fördermöglichkeiten Baden-Württembergs.</p>
+      <p>Für eine reale Baugenehmigung wären zugelassene Architekten, Fachplaner und Genehmigungen von <strong>Stadt Isny</strong> und <strong>Landratsamt Ravensburg</strong> erforderlich.</p>
+    </div>
+    <div class="about-data glass-heavy r-r">
+      <div class="ad-header">// Projektdaten</div>
+      <div class="ad-row"><span class="ad-k">Projekttitel</span><span class="ad-v">Freibad Baggersee Burgwang</span></div>
+      <div class="ad-row"><span class="ad-k">Standort</span><span class="ad-v">Burgwang, 88316 Isny</span></div>
+      <div class="ad-row"><span class="ad-k">Plan-Nr.</span><span class="ad-v">ISN-FB-2026-001</span></div>
+      <div class="ad-row"><span class="ad-k">Stand</span><span class="ad-v">April 2026</span></div>
+      <div class="ad-row"><span class="ad-k">Status</span><span class="ad-v">Konzept / Schulprojekt</span></div>
+      <div class="ad-row"><span class="ad-k">Planungsgrundlage</span><span class="ad-v">HOAI LP 2–3 Vorentwurf</span></div>
+      <div class="ad-row"><span class="ad-k">Behörden</span><span class="ad-v">Stadt Isny · LRA Ravensburg</span></div>
+      <div class="ad-row"><span class="ad-k">Norm</span><span class="ad-v">DIN EN 15288-1</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2>Freibad Baggersee Burgwang</h2>
+      <p>Konzeptentwurf für ein modernes öffentliches Schwimmbad in Burgwang bei Isny im Allgäu. Erstellt als Schulprojekt 2026.</p>
+    </div>
+    <div class="footer-col">
+      <h4>// Inhalt</h4>
+      <ul>
+        <li><a href="#projekt">Das Projekt</a></li>
+        <li><a href="#lage">Lageplan</a></li>
+        <li><a href="#becken">Beckenanlagen</a></li>
+        <li><a href="#technik">Technik</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>// Planung</h4>
+      <ul>
+        <li><a href="#zeitplan">Zeitplan</a></li>
+        <li><a href="#kosten">Kosten</a></li>
+        <li><a href="#ideen">Ideen</a></li>
+        <li><a href="#about">Über das Projekt</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Schulprojekt · Freibad Baggersee Burgwang · Isny im Allgäu</span>
+    <div class="footer-stamp">Vorentwurf · Konzept · Nicht prüffähig</div>
+  </div>
+</footer>
+
 <script>
-    // 3D PARALLAX EFFECT FÜR DIE HERO CARD
-    const card = document.getElementById('heroCard');
-    document.addEventListener('mousemove', (e) => {
-        let x = (window.innerWidth / 2 - e.pageX) / 25;
-        let y = (window.innerHeight / 2 - e.pageY) / 25;
-        card.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-    });
+/* ════ CURSOR ════ */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function tick(){
+  rx+=(mx-rx)*.15;ry+=(my-ry)*.15;
+  cur.style.cssText=`left:${mx}px;top:${my}px`;
+  ring.style.cssText=`left:${rx}px;top:${ry}px`;
+  requestAnimationFrame(tick);
+})();
+document.querySelectorAll('a,button,[id="search-btn"]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
 
-    // GLOBALE SUCHE
-    function performSearch() {
-        const query = document.getElementById('globalSearch').value.toLowerCase();
-        const cards = document.querySelectorAll('.searchable');
+/* ════ STARS ════ */
+const sf=document.getElementById('stars');
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');s.className='star';
+  const sz=Math.random()*2+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*85}%;animation-duration:${Math.random()*4+2}s;animation-delay:${Math.random()*6}s`;
+  sf.appendChild(s);
+}
 
-        cards.forEach(card => {
-            const content = card.innerText.toLowerCase();
-            if (content.includes(query)) {
-                card.style.display = "block";
-                card.style.opacity = "1";
-                card.style.transform = "scale(1)";
-                
-                // Highlight Effekt (Optional: nur wenn query nicht leer)
-                if(query.length > 2) {
-                    card.style.borderColor = "var(--accent)";
-                    card.style.boxShadow = "0 0 20px rgba(94, 207, 238, 0.4)";
-                } else {
-                    card.style.borderColor = "var(--glass-border)";
-                }
-            } else {
-                card.style.opacity = "0.1";
-                card.style.transform = "scale(0.95)";
-                // card.style.display = "none"; // Wenn du sie ganz verstecken willst
-            }
-        });
+/* ════ NAV SCROLL ════ */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>80),{passive:true});
+
+/* ════ PARALLAX HERO ════ */
+window.addEventListener('scroll',()=>{
+  const s=scrollY;
+  document.querySelector('.hero-headline').style.transform=`translateY(${s*.25}px)`;
+  document.querySelector('.hero-right').style.transform=`translateY(${s*.18}px)`;
+  document.querySelector('.hero-grid').style.transform=`perspective(500px) rotateX(50deg) translateY(${s*.06}px)`;
+},{passive:true});
+
+/* ════ 3D TILT CARD ════ */
+const sc=document.getElementById('sc'),ss=document.getElementById('ss');
+if(sc){
+  sc.addEventListener('mousemove',e=>{
+    const r=sc.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    sc.style.transform=`rotateY(${x*18}deg) rotateX(${-y*14}deg) scale(1.04)`;
+    ss.style.background=`radial-gradient(circle at ${(x+.5)*100}% ${(y+.5)*100}%,rgba(255,255,255,.12),transparent 55%)`;
+  });
+  sc.addEventListener('mouseleave',()=>{sc.style.transform='';ss.style.background=''});
+}
+
+/* ════ SCROLL REVEAL ════ */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('show');
+      // bars
+      e.target.querySelectorAll('.kb-fill').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',300+i*80));
     }
-</script>
+  });
+},{threshold:.1});
+document.querySelectorAll('.r,.r-l,.r-r,.stg').forEach(el=>io.observe(el));
+// also watch kosten hero
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.querySelectorAll('.kb-fill').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',200+i*90));
+  });
+},{threshold:.3}).observe(document.querySelector('.kosten-hero')||document.body);
 
+/* ════ SEARCH ════ */
+const SEARCH_DATA=[
+  {section:'Projekt',title:'Projektübersicht',text:'Freibad Baggersee Burgwang Isny im Allgäu Konzept Schulprojekt 2026 Naturschwimmbad nachhaltig barrierefrei',href:'#projekt'},
+  {section:'Lageplan',title:'Standort Burgwang',text:'Baggersee Burgwang Koordinaten 47.6924 10.0763 Gesamtfläche 3,2 Hektar Zufahrt L265 Isny Gelände Lageplan',href:'#lage'},
+  {section:'Becken',title:'Sportbecken 50m',text:'Sportbecken 50 Meter 25 Meter 6 Bahnen DIN EN 15288 Tiefe 1,35 2,00 Meter Volumen 2187 m³ Startblöcke Wettkampf',href:'#becken'},
+  {section:'Becken',title:'Sprungbecken',text:'Sprungbecken 20x20 Meter Tiefe 4,50 Meter Sprungturm Plattformen 3m 5m 7,5m Sprungbretter 1m 3m Adrenalin',href:'#becken'},
+  {section:'Becken',title:'Kinderbecken',text:'Kinderbecken Kleinkinder Tiefe 0 0,60 Meter Wasserrutsche 24 Meter Wasserspielanlage Temperatur 30 32 Grad organisch',href:'#becken'},
+  {section:'Technik',title:'Wasseraufbereitung',text:'Wasseraufbereitung DIN EN 15288 Mehrschichtfiltration Chlor UV Desinfektion Pufferbehälter Umwälzung Filter Pumpen',href:'#technik'},
+  {section:'Technik',title:'Heizung & Solar',text:'Wärmepumpe Solarkollektoren Photovoltaik 80 kWp Wärmerückgewinnung Beckenwasser Heizung Energie nachhaltig',href:'#technik'},
+  {section:'Technik',title:'Sicherheit',text:'Rettungsschwimmer Aufsichtstürme Videoüberwachung Defibrillator Erste Hilfe DLRG Sicherheitskonzept Notfall',href:'#technik'},
+  {section:'Technik',title:'Barrierefreiheit',text:'Barrierefreiheit Rollstuhl Hebebühne Rampe taktiles Leitsystem Behindertengerechtes WC Parkplätze Inklusiv',href:'#technik'},
+  {section:'Zeitplan',title:'Bauzeitplan 2026–2029',text:'Zeitplan Bauphasen Voruntersuchung Vorplanung HOAI Genehmigung Bauantrag Vergabe VOB Rohbau Erdarbeiten Eröffnung 2029',href:'#zeitplan'},
+  {section:'Zeitplan',title:'Genehmigungsplanung',text:'Bauantrag Landratsamt Ravensburg Stadt Isny Wasserrecht Betriebsgenehmigung Bäderrecht UVP Umwelt Naturschutz',href:'#zeitplan'},
+  {section:'Kosten',title:'Kostenrahmen 10,3 Mio €',text:'Kosten Kostenrahmen 10,3 Millionen Euro DIN 276 Baukonstruktion Technische Anlagen Außenanlagen Ausstattung Baunebenkosten netto MwSt',href:'#kosten'},
+  {section:'Kosten',title:'Förderquellen',text:'Förderung LEADER Programm EU Sportstättenbau Baden Württemberg KfW Kommunalkredit Stadtentwicklungsfonds Sponsoren',href:'#kosten'},
+  {section:'Ideen',title:'Sauna & Wellness',text:'Sauna Wellness Außensauna Baggersee Biosauna Tauchbecken Finnische Sauna Erholung Allgäu',href:'#ideen'},
+  {section:'Ideen',title:'Freibad-App & Digitales',text:'App Freibad App Online Ticketing Auslastung Bahnreservierung Saisonpass Digital Smart',href:'#ideen'},
+  {section:'Ideen',title:'Nachtschwimmen & Events',text:'Nachtschwimmen Abendöffnung Sternenhimmel Beleuchtung Events Schwimmfeste Wasserball Aquafitness Kurse',href:'#ideen'},
+  {section:'Ideen',title:'Biergarten & Gastronomie',text:'Biergarten Gastronomie Kiosk Allgäu Küche Eis Bier Bistro Sitzbereich Terrasse',href:'#ideen'},
+  {section:'Nachhaltigkeit',title:'Solar & PV-Anlage',text:'Photovoltaik Solar Solarenergie 80 kWp Solarkollektoren CO2 neutral ökologisch Wärme Strom',href:'#nachhaltigkeit'},
+  {section:'Nachhaltigkeit',title:'Regenwasser & Dachbegrünung',text:'Regenwasser Zisterne Dachbegrünung Insekten Biotop ökologisch Gründach Bewässerung WC',href:'#nachhaltigkeit'},
+  {section:'Info',title:'Über das Schulprojekt',text:'Schulprojekt Vorentwurf Konzept HOAI DIN Norm Planungsgrundlage Architektur Kommunalplanung',href:'#about'},
+];
+
+const overlay=document.getElementById('search-overlay');
+const input=document.getElementById('search-input');
+const results=document.getElementById('search-results');
+
+function openSearch(){overlay.classList.add('open');setTimeout(()=>input.focus(),50)}
+function closeSearch(){overlay.classList.remove('open')}
+
+function hl(t,q){
+  if(!q)return t;
+  const re=new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return t.replace(re,'<mark>$1</mark>');
+}
+
+function doSearch(q){
+  if(!q.trim()){results.innerHTML='<div class="sr-empty">Tippe einen Begriff ein…</div>';return}
+  const lq=q.toLowerCase();
+  const hits=SEARCH_DATA.filter(d=>
+    d.title.toLowerCase().includes(lq)||
+    d.text.toLowerCase().includes(lq)||
+    d.section.toLowerCase().includes(lq)
+  );
+  if(!hits.length){results.innerHTML=`<div class="sr-empty">Keine Ergebnisse für „${q}"</div>`;return}
+  results.innerHTML=hits.map(h=>{
+    const words=h.text.split(' ');
+    const idx=words.findIndex(w=>w.toLowerCase().includes(lq));
+    const snip=words.slice(Math.max(0,idx-4),idx+8).join(' ');
+    return`<a class="sr-item" href="${h.href}" onclick="closeSearch()">
+      <div class="sr-section">${h.section}</div>
+      <div class="sr-title">${hl(h.title,q)}</div>
+      <div class="sr-snippet">${hl(snip+'…',q)}</div>
+    </a>`;
+  }).join('');
+}
+
+document.getElementById('search-btn').addEventListener('click',openSearch);
+document.getElementById('search-close').addEventListener('click',closeSearch);
+input.addEventListener('input',e=>doSearch(e.target.value));
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeSearch()});
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch()}
+  if(e.key==='Escape')closeSearch();
+});
+
+// hint for cmd+k
+document.querySelector('.sr-hint').textContent='⌘K öffnen · ↑↓ navigieren · Esc schließen';
+</script>
 </body>
 </html>
